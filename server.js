@@ -1,58 +1,57 @@
 const express = require("express");
-const cors = require("cors");
-
 const app = express();
 
-app.use(express.urlencoded({ extended: true }));
-app.use(cors());
 app.use(express.json());
-app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(__dirname));
+
+// Datos en memoria
+let cola = [];
+let contador = 1;
+
+// Crear turno
+app.post("/turno", (req, res) => {
+    const nuevo = {
+        numero: contador++,
+        tiempoEstimado: cola.length * 5,
+        checkin: false
+    };
+
+    cola.push(nuevo);
+
+    res.json(nuevo);
+});
+
+// Obtener cola
+app.get("/cola", (req, res) => {
+    res.json({ cola });
+});
+
+// Check-in
+app.post("/checkin/:numero", (req, res) => {
+    const turno = cola.find(t => t.numero == req.params.numero);
+
+    if (turno) {
+        turno.checkin = true;
+    }
+
+    res.json({ ok: true });
+});
+
+// Avanzar cola (simulación)
+app.post("/avanzar", (req, res) => {
+    cola.shift();
+    res.json({ ok: true });
+});
+
+// Ruta principal
 app.get("/", (req, res) => {
     res.sendFile(__dirname + "/index.html");
 });
 
-let turnoActual = 0;
-let cola = [];
-let contador = 1;
-const TIEMPO_POR_PERSONA = 5;
+// Puerto dinámico (Render)
+const PORT = process.env.PORT || 3000;
 
-app.post("/turno", (req, res) => {
-    const nuevo = {
-        numero: contador++,
-        presente: false
-    };
-    cola.push(nuevo);
-    res.json(nuevo);
-});
-
-app.get("/cola", (req, res) => {
-    const colaConTiempo = cola.map((t, index) => {
-        return {
-            ...t,
-            tiempoEstimado: index * TIEMPO_POR_PERSONA
-        };
-    });
-
-    res.json({ turnoActual, cola: colaConTiempo });
-});
-
-app.post("/checkin/:numero", (req, res) => {
-    const turno = cola.find(t => t.numero == req.params.numero);
-    if (turno) turno.presente = true;
-    res.json({ ok: true });
-});
-
-app.post("/siguiente", (req, res) => {
-    while (cola.length > 0) {
-        const siguiente = cola.shift();
-        if (siguiente.presente) {
-            turnoActual = siguiente.numero;
-            return res.json({ turnoActual });
-        }
-    }
-    res.json({ mensaje: "No hay clientes presentes" });
-});
-
-app.listen(3000, () => {
-    console.log("Servidor corriendo en http://localhost:3000");
+app.listen(PORT, () => {
+    console.log("Servidor corriendo en puerto " + PORT);
 });
