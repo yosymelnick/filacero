@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Panel Negocio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: #f5f5f5;
+        }
+
+        h1 {
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 15px 25px;
+            margin: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            background-color: #ff5c5c;
+            color: white;
+            cursor: pointer;
+        }
+
+        #cola {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>🏪 Panel Negocio</h1>
+
+<button onclick="avanzar()">Atender siguiente</button>
+
+<div id="cola"></div>
+
+<script>
+async function cargarCola() {
+    const res = await fetch("/cola");
+    const data = await res.json();
+
+    const lista = data.cola.map(t =>
+        "Turno " + t.numero + " - " + t.tiempoEstimado + " min"
+    );
+
+    document.getElementById("cola").innerHTML = lista.join("<br>");
+}
+
+async function avanzar() {
+    await fetch("/avanzar", { method: "POST" });
+    cargarCola();
+}
+
+setInterval(cargarCola, 2000);
+</script>
+
+</body>
+</html>
