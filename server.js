@@ -21,7 +21,6 @@ app.post("/turno", (req, res) => {
 
     res.json(nuevo);
 });
-console.log("🔥 ESTE ES MI SERVER REAL");
 
 
 // Obtener cola
