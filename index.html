@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FilaCero</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #eee;
+        }
+
+        #turno {
+            font-size: 28px;
+            margin-top: 20px;
+            font-weight: bold;
+        }
+
+        #info {
+            margin-top: 10px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+	<audio id="alertaSonido">
+    	<source src="https://www.soundjay.com/buttons/sounds/button-3.mp3" type="audio/mpeg">
+	</audio>
+<body>
+
+<div class="card">
+    <h1>📱 FilaCero</h1>
+
+    <button class="btn-primary" onclick="sacarTurno()">Sacar número</button>
+
+    <div id="turno"></div>
+    <div id="info"></div>
+
+    <button class="btn-secondary" onclick="checkin()">Estoy en el local</button>
+</div>
+
+<script src="cliente.js"></script>
+
+</body>
+</html>
