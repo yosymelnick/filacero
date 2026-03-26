@@ -1,18 +1,13 @@
 const express = require("express");
+const path = require("path");
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-const path = require("path");
 
+// Servir archivos estáticos
 app.use(express.static(path.join(__dirname)));
-app.get("/admin", (req, res) => {
-    res.sendFile(path.join(__dirname, "admin.html"));
-});
 
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "index.html"));
-});
 // Datos en memoria
 let cola = [];
 let contador = 1;
@@ -26,10 +21,8 @@ app.post("/turno", (req, res) => {
     };
 
     cola.push(nuevo);
-
     res.json(nuevo);
 });
-
 
 // Obtener cola
 app.get("/cola", (req, res) => {
@@ -47,22 +40,22 @@ app.post("/checkin/:numero", (req, res) => {
     res.json({ ok: true });
 });
 
-// Avanzar cola (simulación)
+// Avanzar cola
 app.post("/avanzar", (req, res) => {
     cola.shift();
     res.json({ ok: true });
 });
 
-// Ruta principal
+// Rutas principales (SOLO UNA VEZ)
 app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/index.html");
+    res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.get("/admin", (req, res) => {
-    res.sendFile(__dirname + "/admin.html");
+    res.sendFile(path.join(__dirname, "admin.html"));
 });
 
-// Puerto dinámico (Render)
+// Puerto
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
