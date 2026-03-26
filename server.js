@@ -3,8 +3,16 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(__dirname));
+const path = require("path");
 
+app.use(express.static(path.join(__dirname)));
+app.get("/admin", (req, res) => {
+    res.sendFile(path.join(__dirname, "admin.html"));
+});
+
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "index.html"));
+});
 // Datos en memoria
 let cola = [];
 let contador = 1;
