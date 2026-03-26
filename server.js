@@ -50,6 +50,10 @@ app.get("/", (req, res) => {
     res.sendFile(__dirname + "/index.html");
 });
 
+app.get("/admin", (req, res) => {
+    res.sendFile(__dirname + "/admin.html");
+});
+
 // Puerto dinámico (Render)
 const PORT = process.env.PORT || 3000;
 
