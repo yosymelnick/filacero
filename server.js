@@ -3,11 +3,6 @@ const path = require("path");
 const app = express();
 const fs = require("fs");
 
-app.get("/debug", (req, res) => {
-    const files = fs.readdirSync(__dirname);
-    res.json(files);
-});
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -63,6 +58,10 @@ app.get("/admin", (req, res) => {
 
 // Puerto
 const PORT = process.env.PORT || 3000;
+
+app.get("*", (req, res) => {
+    res.sendFile(require("path").join(__dirname, "index.html"));
+});
 
 app.listen(PORT, () => {
     console.log("Servidor corriendo en puerto " + PORT);
