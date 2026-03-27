@@ -1,63 +1,127 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-    <title>Panel Negocio</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>Panel de Negocio</title>
 
-    <style>
-        body {
-            font-family: Arial;
-            text-align: center;
-            background: #f5f5f5;
-        }
+<style>
+body {
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+    text-align: center;
+}
 
-        h1 {
-            margin-top: 30px;
-        }
+h1 {
+    margin-top: 20px;
+}
 
-        button {
-            padding: 15px 25px;
-            margin: 10px;
-            font-size: 16px;
-            border: none;
-            border-radius: 10px;
-            background-color: #ff5c5c;
-            color: white;
-            cursor: pointer;
-        }
+button {
+    padding: 10px 20px;
+    margin: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
 
-        #cola {
-            margin-top: 20px;
-        }
-    </style>
+.avanzar {
+    background: #22c55e;
+    color: white;
+}
+
+.metrics {
+    margin-top: 30px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 20px;
+}
+
+.card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+}
+</style>
 </head>
 
 <body>
 
-<h1>🏪 Panel Negocio</h1>
+<h1>📊 Panel de Negocio</h1>
 
-<button onclick="avanzar()">Atender siguiente</button>
+<button class="avanzar" onclick="avanzar()">Atender siguiente</button>
 
-<div id="cola"></div>
+<h2>👥 Cola actual</h2>
+<ul id="cola"></ul>
+
+<h2>📊 Métricas</h2>
+
+<div class="metrics">
+    <div class="card">
+        <h3>Clientes hoy</h3>
+        <p id="clientes">0</p>
+    </div>
+
+    <div class="card">
+        <h3>Tiempo promedio</h3>
+        <p id="tiempo">0 min</p>
+    </div>
+
+    <div class="card">
+        <h3>En cola</h3>
+        <p id="encola">0</p>
+    </div>
+
+    <div class="card">
+        <h3>Perdidos</h3>
+        <p id="perdidos">0</p>
+    </div>
+</div>
 
 <script>
+
+// Avanzar turno
+async function avanzar() {
+    await fetch("/avanzar", { method: "POST" });
+    cargarTodo();
+}
+
+// Cargar cola
 async function cargarCola() {
     const res = await fetch("/cola");
     const data = await res.json();
 
-    const lista = data.cola.map(t =>
-        "Turno " + t.numero + " - " + t.tiempoEstimado + " min"
-    );
+    const lista = document.getElementById("cola");
+    lista.innerHTML = "";
 
-    document.getElementById("cola").innerHTML = lista.join("<br>");
+    data.cola.forEach(t => {
+        const li = document.createElement("li");
+        li.innerText = "Turno " + t.numero + (t.checkin ? " ✔️" : " ❌");
+        lista.appendChild(li);
+    });
 }
 
-async function avanzar() {
-    await fetch("/avanzar", { method: "POST" });
+// Cargar métricas
+async function cargarMetrics() {
+    const res = await fetch("/metrics");
+    const data = await res.json();
+
+    document.getElementById("clientes").innerText = data.atendidosHoy;
+    document.getElementById("tiempo").innerText = data.tiempoPromedio;
+    document.getElementById("encola").innerText = data.enCola;
+    document.getElementById("perdidos").innerText = data.perdidos;
+}
+
+// Cargar todo
+function cargarTodo() {
     cargarCola();
+    cargarMetrics();
 }
 
-setInterval(cargarCola, 2000);
+// Auto refresh
+setInterval(cargarTodo, 3000);
+cargarTodo();
+
 </script>
 
 </body>

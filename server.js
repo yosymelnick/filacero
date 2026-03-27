@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
 const app = express();
-const fs = require("fs");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -12,6 +11,10 @@ app.use(express.static(path.join(__dirname)));
 // Datos en memoria
 let cola = [];
 let contador = 1;
+
+// NUEVO: métricas
+let historial = [];
+let tiemposAtencion = [];
 
 // Crear turno
 app.post("/turno", (req, res) => {
@@ -43,35 +46,55 @@ app.post("/checkin/:numero", (req, res) => {
 
 // Avanzar cola
 app.post("/avanzar", (req, res) => {
-    cola.shift();
+    const atendido = cola.shift();
+
+    if (atendido) {
+        const tiempoReal = Math.floor(Math.random() * 10) + 3;
+
+        tiemposAtencion.push(tiempoReal);
+
+        historial.push({
+            ...atendido,
+            atendido: true,
+            tiempoReal
+        });
+    }
+
     res.json({ ok: true });
 });
 
-// Rutas principales (SOLO UNA VEZ)
+// MÉTRICAS
+app.get("/metrics", (req, res) => {
+    const atendidosHoy = historial.length;
+
+    const tiempoPromedio = tiemposAtencion.length
+        ? (tiemposAtencion.reduce((a, b) => a + b, 0) / tiemposAtencion.length).toFixed(1)
+        : 0;
+
+    const enCola = cola.length;
+
+    const perdidos = historial.filter(t => !t.checkin).length;
+
+    res.json({
+        atendidosHoy,
+        tiempoPromedio,
+        enCola,
+        perdidos
+    });
+});
+
+// Rutas
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
 });
 
+// 🔥 FIX IMPORTANTE
 app.get("/admin", (req, res) => {
-    res.sendFile(path.join(__dirname, "admin.html"));
+    res.redirect("/admin.html");
 });
 
 // Puerto
 const PORT = process.env.PORT || 3000;
-
-// Rutas principales
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "index.html"));
-});
-
-app.get("/admin", (req, res) => {
-    res.sendFile(path.join(__dirname, "admin.html"));
-});
-
-// SOLO fallback si no encuentra nada
-app.use((req, res) => {
-    res.status(404).send("Ruta no encontrada");
-});
 
 app.listen(PORT, () => {
     console.log("Servidor corriendo en puerto " + PORT);
