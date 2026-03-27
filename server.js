@@ -1,3 +1,5 @@
+console.log("🔥 VERSION NUEVA ACTIVA");
+
 const express = require("express");
 const path = require("path");
 const app = express();
