@@ -1,8 +1,12 @@
-console.log("🔥 VERSION NUEVA ACTIVA");
-
 const express = require("express");
 const path = require("path");
 const app = express();
+const fs = require("fs");
+
+app.get("/debug", (req, res) => {
+    const files = fs.readdirSync(__dirname);
+    res.json(files);
+});
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
