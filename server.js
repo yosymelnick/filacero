@@ -59,8 +59,18 @@ app.get("/admin", (req, res) => {
 // Puerto
 const PORT = process.env.PORT || 3000;
 
-app.get("*", (req, res) => {
-    res.sendFile(require("path").join(__dirname, "index.html"));
+// Rutas principales
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "index.html"));
+});
+
+app.get("/admin", (req, res) => {
+    res.sendFile(path.join(__dirname, "admin.html"));
+});
+
+// SOLO fallback si no encuentra nada
+app.use((req, res) => {
+    res.status(404).send("Ruta no encontrada");
 });
 
 app.listen(PORT, () => {
